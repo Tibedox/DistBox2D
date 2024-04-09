@@ -3,6 +3,7 @@ package com.mygdx.game;
 import static com.mygdx.game.DistBox2D.*;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -62,6 +63,34 @@ public class DynamicBody {
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width/2, height/2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+
+        shape.dispose();
+    }
+
+    public DynamicBody(World world, float x, float y, Polygon p) {
+        type = TYPE_POLY;
+
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+
+        body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.set(p.getVertices());
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

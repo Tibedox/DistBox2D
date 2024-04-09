@@ -5,7 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,7 +16,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class DistBox2D extends ApplicationAdapter {
 	// глобальные константы
 	public static final float WORLD_WIDTH = 16, WORLD_HEIGHT = 9;
-	public static final int TYPE_CIRCLE = 0, TYPE_BRICK = 1;
+	public static final int TYPE_CIRCLE = 0, TYPE_BRICK = 1, TYPE_POLY = 2;
 
 	// системные объекты
 	SpriteBatch batch;
@@ -23,10 +25,12 @@ public class DistBox2D extends ApplicationAdapter {
 	Box2DDebugRenderer debugRenderer;
 
 	// ресурсы
-	Texture imgBox;
-	Texture imgBoxBlue;
-	Texture imgCircle;
-	Texture imgLoot;
+	Texture imgLootAtlas;
+	TextureRegion imgBoxLightGray;
+	TextureRegion imgBoxMediumGray;
+	TextureRegion imgBoxPurple;
+	TextureRegion imgCircle;
+	TextureRegion imgLoot;
 
 	// собственные объекты и переменные
 	StaticBody floor;
@@ -44,16 +48,21 @@ public class DistBox2D extends ApplicationAdapter {
 		world = new World(new Vector2(0, -9.8f), true);
 		debugRenderer = new Box2DDebugRenderer();
 
-		imgBox = new Texture("purplebox.png");
-		imgBoxBlue = new Texture("bluebox.png");
-		imgCircle = new Texture("arrowBlue.png");
+		imgLootAtlas = new Texture("atlasloot.png");
+		imgBoxLightGray = new TextureRegion(imgLootAtlas, 0, 0, 256, 256);
+		imgBoxMediumGray = new TextureRegion(imgLootAtlas, 256, 0, 256, 256);
+		imgBoxPurple = new TextureRegion(imgLootAtlas, 256*2, 0, 256, 256);
+		imgCircle = new TextureRegion(imgLootAtlas, 256*3, 0, 256, 256);
 
 		floor = new StaticBody(world, 8, 0.6f, 15, 1);
 		wallLeft = new StaticBody(world, 0.6f, 5, 1, 7);
 		wallRight = new StaticBody(world, 16-0.6f, 5, 1, 7);
 		platform = new KinematicBody(world, 0, 3, 4, 0.5f);
 		for (int i = 0; i < loot.length; i++) {
-			if(i<20) {
+			if(i<10) {
+				Polygon polygon = new Polygon(new float[]{0, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f});
+				loot[i] = new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, polygon);
+			} else if(i<20) {
 				loot[i] = new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, 0.4f);
 			}
 			else {
@@ -70,22 +79,22 @@ public class DistBox2D extends ApplicationAdapter {
 		debugRenderer.render(world, camera.combined);
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+/*
+		batch.draw(imgBoxMediumGray, floor.getX(), floor.getY(), floor.getWidth(), floor.getHeight());
+		batch.draw(imgBoxMediumGray, wallLeft.getX(), wallLeft.getY(), wallLeft.getWidth(), wallLeft.getHeight());
+		batch.draw(imgBoxMediumGray, wallRight.getX(), wallRight.getY(), wallRight.getWidth(), wallRight.getHeight());
 
-		batch.draw(imgBoxBlue, floor.getX(), floor.getY(), floor.getWidth(), floor.getHeight());
-		batch.draw(imgBoxBlue, wallLeft.getX(), wallLeft.getY(), wallLeft.getWidth(), wallLeft.getHeight());
-		batch.draw(imgBoxBlue, wallRight.getX(), wallRight.getY(), wallRight.getWidth(), wallRight.getHeight());
-
-		batch.draw(imgBoxBlue, platform.getX(), platform.getY(), platform.getWidth()/2, platform.getHeight()/2,
-				platform.getWidth(), platform.getHeight(), 1, 1, platform.getAngle(), 10, 10, 20, 20, false, false);
+		batch.draw(imgBoxLightGray, platform.getX(), platform.getY(), platform.getWidth()/2, platform.getHeight()/2,
+				platform.getWidth(), platform.getHeight(), 1, 1, platform.getAngle());
 
 		for(DynamicBody b: loot){
 			if(b.type == TYPE_CIRCLE) imgLoot = imgCircle;
-			else if (b.type == TYPE_BRICK) imgLoot = imgBox;
+			else if (b.type == TYPE_BRICK) imgLoot = imgBoxPurple;
 
 			batch.draw(imgLoot, b.getX(), b.getY(), b.getWidth()/2, b.getHeight()/2,
-					b.getWidth(), b.getHeight(), 1, 1, b.getAngle(), 0, 0, 500, 500, false, false);
+					b.getWidth(), b.getHeight(), 1, 1, b.getAngle());
 		}
-
+*/
 		batch.end();
 		world.step(1/60f, 6, 2);
 	}
@@ -93,9 +102,7 @@ public class DistBox2D extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		imgBox.dispose();
-		imgBoxBlue.dispose();
-		imgCircle.dispose();
+		imgLootAtlas.dispose();
 		world.dispose();
 		debugRenderer.dispose();
 	}

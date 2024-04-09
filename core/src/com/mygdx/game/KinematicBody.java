@@ -42,7 +42,9 @@ public class KinematicBody {
         x = body.getPosition().x;
         if(x > WORLD_WIDTH | x < 0) {
             velocity = -velocity;
+            omega = -omega;
             body.setLinearVelocity(velocity, 0);
+            body.setAngularVelocity(omega);
         }
     }
 
