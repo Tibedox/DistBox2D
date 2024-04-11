@@ -117,32 +117,32 @@ public class DynamicBody {
 
         body = world.createBody(bodyDef);
         // тело 1
-        PolygonShape shape = new PolygonShape();
-        shape.set(p1.getVertices());
+        PolygonShape shape1 = new PolygonShape();
+        shape1.set(p1.getVertices());
 
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.6f;
+        FixtureDef fixtureDef1 = new FixtureDef();
+        fixtureDef1.shape = shape1;
+        fixtureDef1.density = 0.5f;
+        fixtureDef1.friction = 0.4f;
+        fixtureDef1.restitution = 0.6f;
 
-        Fixture fixture1 = body.createFixture(fixtureDef);
+        Fixture fixture1 = body.createFixture(fixtureDef1);
 
-        shape.dispose();
+        shape1.dispose();
 
         // тело 2
-        shape = new PolygonShape();
-        shape.set(p2.getVertices());
+        PolygonShape shape2 = new PolygonShape();
+        shape2.set(p2.getVertices());
 
-        fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.6f;
+        FixtureDef fixtureDef2 = new FixtureDef();
+        fixtureDef2.shape = shape2;
+        fixtureDef2.density = 0.5f;
+        fixtureDef2.friction = 0.4f;
+        fixtureDef2.restitution = 0.6f;
 
-        Fixture fixture2 = body.createFixture(fixtureDef);
+        Fixture fixture2 = body.createFixture(fixtureDef2);
 
-        shape.dispose();
+        shape2.dispose();
     }
 
     public float getX() {
