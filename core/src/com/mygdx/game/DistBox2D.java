@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -22,6 +23,7 @@ public class DistBox2D extends ApplicationAdapter {
 	// системные объекты
 	SpriteBatch batch;
 	OrthographicCamera camera;
+	Vector3 touch;
 	World world;
 	Box2DDebugRenderer debugRenderer;
 
@@ -47,8 +49,10 @@ public class DistBox2D extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
+		touch = new Vector3();
 		world = new World(new Vector2(0, -9.8f), true);
 		debugRenderer = new Box2DDebugRenderer();
+		//debugRenderer.setDrawVelocities(true);
 
 		imgLootAtlas = new Texture("atlasloot.png");
 		imgBoxLightGray = new TextureRegion(imgLootAtlas, 0, 0, 256, 256);
@@ -60,7 +64,7 @@ public class DistBox2D extends ApplicationAdapter {
 		floor = new StaticBody(world, 8, 0.6f, 15, 1);
 		wallLeft = new StaticBody(world, 0.6f, 5, 1, 7);
 		wallRight = new StaticBody(world, 16-0.6f, 5, 1, 7);
-		platform = new KinematicBody(world, 0, 3, 4, 0.5f);
+		//platform = new KinematicBody(world, 0, 3, 4, 0.5f);
 		for (int i = 0; i < 10; i++) {
 			Polygon polygon = new Polygon(new float[]{0, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f});
 			loot.add(new DynamicBody(world, 2 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, polygon));
@@ -80,8 +84,22 @@ public class DistBox2D extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		platform.move();
+		// касания
+		if(Gdx.input.justTouched()){
+			touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			camera.unproject(touch);
 
+			for (DynamicBody l: loot) {
+				if(l.hit(touch.x, touch.y)){
+					l.setImpulse(new Vector2(0, 3));
+				}
+			}
+		}
+
+		// события
+		//platform.move();
+
+		// отрисовка
 		ScreenUtils.clear(0.2f, 0, 0.3f, 1);
 		debugRenderer.render(world, camera.combined);
 		batch.setProjectionMatrix(camera.combined);

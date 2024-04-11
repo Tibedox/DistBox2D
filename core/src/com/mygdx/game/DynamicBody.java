@@ -4,6 +4,7 @@ import static com.mygdx.game.DistBox2D.*;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -163,5 +164,16 @@ public class DynamicBody {
 
     public float getAngle() {
         return MathUtils.radiansToDegrees*body.getAngle();
+    }
+
+    public boolean hit(float tx, float ty) {
+        for(Fixture f: body.getFixtureList()){
+            if(f.testPoint(tx, ty)) return f.testPoint(tx, ty);
+        }
+        return false;
+    }
+
+    public void setImpulse(Vector2 p) {
+        body.applyLinearImpulse(p, body.getWorldCenter(), true);
     }
 }
