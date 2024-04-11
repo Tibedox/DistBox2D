@@ -25,6 +25,7 @@ public class DynamicBody {
         this.x = x;
         this.y = y;
         this.r = r;
+        width = height = r*2;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -44,7 +45,6 @@ public class DynamicBody {
         Fixture fixture = body.createFixture(fixtureDef);
 
         shape.dispose();
-        width = height = r*2;
     }
 
     public DynamicBody(World world, float x, float y, float width, float height) {
@@ -80,8 +80,8 @@ public class DynamicBody {
 
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = p.getBoundingRectangle().getWidth();
+        this.height = p.getBoundingRectangle().getHeight();
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -99,6 +99,48 @@ public class DynamicBody {
         fixtureDef.restitution = 0.6f;
 
         Fixture fixture = body.createFixture(fixtureDef);
+
+        shape.dispose();
+    }
+
+    public DynamicBody(World world, float x, float y, Polygon p1, Polygon p2) {
+        type = TYPE_POLY;
+
+        this.x = x;
+        this.y = y;
+        //this.width = p.getBoundingRectangle().getWidth();
+        //this.height = p.getBoundingRectangle().getHeight();
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+
+        body = world.createBody(bodyDef);
+        // тело 1
+        PolygonShape shape = new PolygonShape();
+        shape.set(p1.getVertices());
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f;
+
+        Fixture fixture1 = body.createFixture(fixtureDef);
+
+        shape.dispose();
+
+        // тело 2
+        shape = new PolygonShape();
+        shape.set(p2.getVertices());
+
+        fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f;
+
+        Fixture fixture2 = body.createFixture(fixtureDef);
 
         shape.dispose();
     }
