@@ -67,6 +67,7 @@ public class DistBox2D extends ApplicationAdapter {
 		//platform = new KinematicBody(world, 0, 3, 4, 0.5f);
 		for (int i = 0; i < 10; i++) {
 			Polygon polygon = new Polygon(new float[]{0, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f});
+
 			loot.add(new DynamicBody(world, 2 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, polygon));
 		}
 		for (int i = 0; i < 10; i++) {
