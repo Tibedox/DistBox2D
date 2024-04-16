@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,7 +19,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class DistBox2D extends ApplicationAdapter {
 	// глобальные константы
 	public static final float WORLD_WIDTH = 16, WORLD_HEIGHT = 9;
-	public static final int TYPE_CIRCLE = 0, TYPE_BRICK = 1, TYPE_POLY = 2;
+	public static final int TYPE_CIRCLE = 0, TYPE_BOX = 1, TYPE_POLY = 2;
 
 	// системные объекты
 	SpriteBatch batch;
@@ -52,7 +53,7 @@ public class DistBox2D extends ApplicationAdapter {
 		touch = new Vector3();
 		world = new World(new Vector2(0, -9.8f), true);
 		debugRenderer = new Box2DDebugRenderer();
-		//debugRenderer.setDrawVelocities(true);
+		debugRenderer.setDrawVelocities(true);
 
 		imgLootAtlas = new Texture("atlasloot.png");
 		imgBoxLightGray = new TextureRegion(imgLootAtlas, 0, 0, 256, 256);
@@ -66,8 +67,8 @@ public class DistBox2D extends ApplicationAdapter {
 		wallRight = new StaticBody(world, 16-0.6f, 5, 1, 7);
 		//platform = new KinematicBody(world, 0, 3, 4, 0.5f);
 		for (int i = 0; i < 10; i++) {
-			Polygon polygon = new Polygon(new float[]{0, 0.5f, -0.5f, -0.5f, 0.5f, -0.5f});
-
+			Polygon polygon = new Polygon(new float[]{0, 1, -1, -1, 1, -1});
+			scalePolygon(polygon, 0.5f);
 			loot.add(new DynamicBody(world, 2 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, polygon));
 		}
 		for (int i = 0; i < 10; i++) {
@@ -77,16 +78,20 @@ public class DistBox2D extends ApplicationAdapter {
 				loot.add(new DynamicBody(world, 6 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, 1.2f, 0.6f));
 		}
 		for (int i = 0; i < 10; i++) {
-			Polygon polygon1 = new Polygon(new float[]{-0.5f, 0.5f, 0, 1, 0.5f, 0.5f});
-			Polygon polygon2 = new Polygon(new float[]{-0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f});
+			Polygon polygon1 = new Polygon(new float[]{-1, 1, 0, 2, 1, 1});
+			scalePolygon(polygon1, 0.5f);
+			Polygon polygon2 = new Polygon(new float[]{-1, 1, 1, 1, 1, -1, -1, -1});
+			scalePolygon(polygon2, 0.5f);
 			loot.add(new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, polygon1, polygon2));
 		}
+
+		setInputProcessor();
 	}
 
 	@Override
 	public void render () {
 		// касания
-		if(Gdx.input.justTouched()){
+		/*if(Gdx.input.justTouched()){
 			touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touch);
 
@@ -95,7 +100,7 @@ public class DistBox2D extends ApplicationAdapter {
 					l.setImpulse(new Vector2(0, 3));
 				}
 			}
-		}
+		}*/
 
 		// события
 		//platform.move();
@@ -115,7 +120,7 @@ public class DistBox2D extends ApplicationAdapter {
 
 		for(DynamicBody b: loot){
 			if(b.type == TYPE_CIRCLE) imgLoot = imgCircle;
-			else if (b.type == TYPE_BRICK) imgLoot = imgBoxPurple;
+			else if (b.type == TYPE_BOX) imgLoot = imgBoxPurple;
 			else if (b.type == TYPE_POLY) imgLoot = imgTriangle;
 
 			batch.draw(imgLoot, b.getX(), b.getY(), b.getWidth()/2, b.getHeight()/2,
@@ -132,5 +137,79 @@ public class DistBox2D extends ApplicationAdapter {
 		imgLootAtlas.dispose();
 		world.dispose();
 		debugRenderer.dispose();
+	}
+
+	private void scalePolygon(Polygon p, float scale) {
+		for(int i=0; i<p.getVertices().length; i++){
+			p.getVertices()[i] *= scale;
+		}
+	}
+
+	private void setInputProcessor() {
+		Gdx.input.setInputProcessor(new InputProcessor() {
+			DynamicBody touchedBody;
+			float startX, startY;
+			@Override
+			public boolean keyDown(int keycode) {
+				return false;
+			}
+
+			@Override
+			public boolean keyUp(int keycode) {
+				return false;
+			}
+
+			@Override
+			public boolean keyTyped(char character) {
+				return false;
+			}
+
+			@Override
+			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+				touch.set(screenX, screenY, 0);
+				camera.unproject(touch);
+
+				for (DynamicBody l: loot) {
+					if(l.hit(touch.x, touch.y)){
+						touchedBody = l;
+						startX = touch.x;
+						startY = touch.y;
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+				if(touchedBody != null){
+					touch.set(screenX, screenY, 0);
+					camera.unproject(touch);
+					Vector2 impulse = new Vector2(touch.x-startX, touch.y-startY);
+					touchedBody.setImpulse(impulse);
+					touchedBody = null;
+				}
+				return false;
+			}
+
+			@Override
+			public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+				return false;
+			}
+
+			@Override
+			public boolean touchDragged(int screenX, int screenY, int pointer) {
+				return false;
+			}
+
+			@Override
+			public boolean mouseMoved(int screenX, int screenY) {
+				return false;
+			}
+
+			@Override
+			public boolean scrolled(float amountX, float amountY) {
+				return false;
+			}
+		});
 	}
 }

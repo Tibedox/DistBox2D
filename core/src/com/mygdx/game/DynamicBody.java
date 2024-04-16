@@ -49,7 +49,7 @@ public class DynamicBody {
     }
 
     public DynamicBody(World world, float x, float y, float width, float height) {
-        type = TYPE_BRICK;
+        type = TYPE_BOX;
 
         this.x = x;
         this.y = y;
