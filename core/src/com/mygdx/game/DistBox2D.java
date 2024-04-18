@@ -192,9 +192,9 @@ public class DistBox2D extends ApplicationAdapter {
 
 					for (DynamicBody l : loot) {
 						if (l.hit(touch.x, touch.y)) {
-							touchedBody = l;
-							startX = touch.x;
-							startY = touch.y;
+							touchedBody1 = l;
+							startX1 = touch.x;
+							startY1 = touch.y;
 						}
 					}
 				}
