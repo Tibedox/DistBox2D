@@ -13,6 +13,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJoint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
@@ -54,6 +58,7 @@ public class DistBox2D extends ApplicationAdapter {
 		world = new World(new Vector2(0, -0f), true);
 		debugRenderer = new Box2DDebugRenderer();
 		debugRenderer.setDrawVelocities(true);
+		debugRenderer.setDrawJoints(true);
 
 		imgLootAtlas = new Texture("atlasloot.png");
 		imgBoxLightGray = new TextureRegion(imgLootAtlas, 0, 0, 256, 256);
@@ -73,6 +78,15 @@ public class DistBox2D extends ApplicationAdapter {
 		loot.add(new DynamicBody(world, 11, 4.5f, 0.4f));
 		loot.add(new DynamicBody(world, 12, 5f, 0.4f));
 		loot.add(new DynamicBody(world, 12, 4f, 0.4f));
+
+		/*WeldJointDef jointDef = new WeldJointDef ();
+		jointDef.initialize(loot.get(2).getBody(), loot.get(3).getBody(), new Vector2(12, 4.5f));
+		WeldJoint joint = (WeldJoint) world.createJoint(jointDef);*/
+
+		DistanceJointDef jointDef = new DistanceJointDef ();
+		jointDef.initialize(loot.get(2).getBody(), loot.get(3).getBody(), new Vector2(12, 5f), new Vector2(12, 4f));
+		DistanceJoint joint = (DistanceJoint) world.createJoint(jointDef);
+
 		/*
 		for (int i = 0; i < 10; i++) {
 			Polygon polygon = new Polygon(new float[]{0, 1, -1, -1, 1, -1});
@@ -175,7 +189,7 @@ public class DistBox2D extends ApplicationAdapter {
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 				if(pointer == 0) {
-					touch.set(Gdx.input.getX(0), Gdx.input.getY(0), 0);
+					touch.set(screenX, screenY, 0);
 					camera.unproject(touch);
 
 					for (DynamicBody l : loot) {
@@ -187,7 +201,7 @@ public class DistBox2D extends ApplicationAdapter {
 					}
 				}
 				else if(pointer == 1) {
-					touch.set(Gdx.input.getX(1), Gdx.input.getY(1), 0);
+					touch.set(screenX, screenY, 0);
 					camera.unproject(touch);
 
 					for (DynamicBody l : loot) {
@@ -204,14 +218,14 @@ public class DistBox2D extends ApplicationAdapter {
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 				if(touchedBody != null & pointer == 0){
-					touch.set(Gdx.input.getX(0), Gdx.input.getY(0), 0);
+					touch.set(screenX, screenY, 0);
 					camera.unproject(touch);
 					Vector2 impulse = new Vector2((touch.x-startX)*2, (touch.y-startY)*2);
 					touchedBody.setImpulse(impulse);
 					touchedBody = null;
 				}
 				else if(touchedBody1 != null & pointer == 1){
-					touch.set(Gdx.input.getX(1), Gdx.input.getY(1), 0);
+					touch.set(screenX, screenY, 0);
 					camera.unproject(touch);
 					Vector2 impulse = new Vector2((touch.x-startX1)*2, (touch.y-startY1)*2);
 					touchedBody1.setImpulse(impulse);

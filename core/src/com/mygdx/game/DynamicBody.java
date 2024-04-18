@@ -168,6 +168,10 @@ public class DynamicBody {
         return MathUtils.radiansToDegrees*body.getAngle();
     }
 
+    public Body getBody() {
+        return body;
+    }
+
     public boolean hit(float tx, float ty) {
         for(Fixture f: body.getFixtureList()){
             if(f.testPoint(tx, ty)) return f.testPoint(tx, ty);
