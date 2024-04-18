@@ -30,6 +30,8 @@ public class DynamicBody {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.linearDamping = 0.3f;
+        bodyDef.angularDamping = 0.3f;
         bodyDef.position.set(x, y);
 
         body = world.createBody(bodyDef);

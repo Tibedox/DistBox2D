@@ -38,7 +38,7 @@ public class DistBox2D extends ApplicationAdapter {
 	TextureRegion imgLoot;
 
 	// собственные объекты и переменные
-	StaticBody floor;
+	StaticBody floor, roof;
 	StaticBody wallLeft, wallRight;
 
 	KinematicBody platform;
@@ -51,7 +51,7 @@ public class DistBox2D extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
 		touch = new Vector3();
-		world = new World(new Vector2(0, -9.8f), true);
+		world = new World(new Vector2(0, -0f), true);
 		debugRenderer = new Box2DDebugRenderer();
 		debugRenderer.setDrawVelocities(true);
 
@@ -62,10 +62,18 @@ public class DistBox2D extends ApplicationAdapter {
 		imgCircle = new TextureRegion(imgLootAtlas, 256*3, 0, 256, 256);
 		imgTriangle = new TextureRegion(imgLootAtlas, 256, 256, 256, 256);
 
-		floor = new StaticBody(world, 8, 0.6f, 15, 1);
-		wallLeft = new StaticBody(world, 0.6f, 5, 1, 7);
-		wallRight = new StaticBody(world, 16-0.6f, 5, 1, 7);
+		floor = new StaticBody(world, 8, 0.5f, 15.8f, 0.5f);
+		roof = new StaticBody(world, 8, 8.5f, 15.8f, 0.5f);
+		wallLeft = new StaticBody(world, 0.5f, 4.5f, 0.5f, 7);
+		wallRight = new StaticBody(world, 16-0.5f, 4.5f, 0.5f, 7);
 		//platform = new KinematicBody(world, 0, 3, 4, 0.5f);
+
+		//loot.add(new DynamicBody(world, 2, 4.5f, 1f, 0.1f));
+		loot.add(new DynamicBody(world, 4, 4.5f, 0.4f));
+		loot.add(new DynamicBody(world, 11, 4.5f, 0.4f));
+		loot.add(new DynamicBody(world, 12, 5f, 0.4f));
+		loot.add(new DynamicBody(world, 12, 4f, 0.4f));
+		/*
 		for (int i = 0; i < 10; i++) {
 			Polygon polygon = new Polygon(new float[]{0, 1, -1, -1, 1, -1});
 			scalePolygon(polygon, 0.5f);
@@ -83,7 +91,7 @@ public class DistBox2D extends ApplicationAdapter {
 			Polygon polygon2 = new Polygon(new float[]{-1, 1, 1, 1, 1, -1, -1, -1});
 			scalePolygon(polygon2, 0.5f);
 			loot.add(new DynamicBody(world, 8 + MathUtils.random(-0.01f, 0.01f), 8 + i * 2, polygon1, polygon2));
-		}
+		}*/
 
 		setInputProcessor();
 	}
@@ -147,8 +155,8 @@ public class DistBox2D extends ApplicationAdapter {
 
 	private void setInputProcessor() {
 		Gdx.input.setInputProcessor(new InputProcessor() {
-			DynamicBody touchedBody;
-			float startX, startY;
+			DynamicBody touchedBody, touchedBody1;
+			float startX, startY, startX1, startY1;
 			@Override
 			public boolean keyDown(int keycode) {
 				return false;
@@ -166,14 +174,28 @@ public class DistBox2D extends ApplicationAdapter {
 
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-				touch.set(screenX, screenY, 0);
-				camera.unproject(touch);
+				if(pointer == 0) {
+					touch.set(Gdx.input.getX(0), Gdx.input.getY(0), 0);
+					camera.unproject(touch);
 
-				for (DynamicBody l: loot) {
-					if(l.hit(touch.x, touch.y)){
-						touchedBody = l;
-						startX = touch.x;
-						startY = touch.y;
+					for (DynamicBody l : loot) {
+						if (l.hit(touch.x, touch.y)) {
+							touchedBody = l;
+							startX = touch.x;
+							startY = touch.y;
+						}
+					}
+				}
+				else if(pointer == 1) {
+					touch.set(Gdx.input.getX(1), Gdx.input.getY(1), 0);
+					camera.unproject(touch);
+
+					for (DynamicBody l : loot) {
+						if (l.hit(touch.x, touch.y)) {
+							touchedBody = l;
+							startX = touch.x;
+							startY = touch.y;
+						}
 					}
 				}
 				return false;
@@ -181,12 +203,19 @@ public class DistBox2D extends ApplicationAdapter {
 
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-				if(touchedBody != null){
-					touch.set(screenX, screenY, 0);
+				if(touchedBody != null & pointer == 0){
+					touch.set(Gdx.input.getX(0), Gdx.input.getY(0), 0);
 					camera.unproject(touch);
-					Vector2 impulse = new Vector2(touch.x-startX, touch.y-startY);
+					Vector2 impulse = new Vector2((touch.x-startX)*2, (touch.y-startY)*2);
 					touchedBody.setImpulse(impulse);
 					touchedBody = null;
+				}
+				else if(touchedBody1 != null & pointer == 1){
+					touch.set(Gdx.input.getX(1), Gdx.input.getY(1), 0);
+					camera.unproject(touch);
+					Vector2 impulse = new Vector2((touch.x-startX1)*2, (touch.y-startY1)*2);
+					touchedBody1.setImpulse(impulse);
+					touchedBody1 = null;
 				}
 				return false;
 			}
