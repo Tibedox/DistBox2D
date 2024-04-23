@@ -56,6 +56,7 @@ public class DistBox2D extends ApplicationAdapter {
 		camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
 		touch = new Vector3();
 		world = new World(new Vector2(0, -0f), true);
+		world.setContactListener(new MyContactListener());
 		debugRenderer = new Box2DDebugRenderer();
 		debugRenderer.setDrawVelocities(true);
 		debugRenderer.setDrawJoints(true);
@@ -83,9 +84,9 @@ public class DistBox2D extends ApplicationAdapter {
 		jointDef.initialize(loot.get(2).getBody(), loot.get(3).getBody(), new Vector2(12, 4.5f));
 		WeldJoint joint = (WeldJoint) world.createJoint(jointDef);*/
 
-		DistanceJointDef jointDef = new DistanceJointDef ();
+		/*DistanceJointDef jointDef = new DistanceJointDef ();
 		jointDef.initialize(loot.get(2).getBody(), loot.get(3).getBody(), new Vector2(12, 5f), new Vector2(12, 4f));
-		DistanceJoint joint = (DistanceJoint) world.createJoint(jointDef);
+		DistanceJoint joint = (DistanceJoint) world.createJoint(jointDef);*/
 
 		/*
 		for (int i = 0; i < 10; i++) {
