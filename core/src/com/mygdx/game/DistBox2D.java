@@ -78,11 +78,11 @@ public class DistBox2D extends ApplicationAdapter {
 		wallRight = new StaticBody(world, 16-0.5f, 4.5f, 0.5f, 7);
 		//platform = new KinematicBody(world, 0, 3, 4, 0.5f);
 
-		//loot.add(new DynamicBody(world, 2, 4.5f, 1f, 0.1f));
-		loot.add(new DynamicBody(world, 4, 4.5f, 0.4f));
-		loot.add(new DynamicBody(world, 11, 4.5f, 0.4f));
-		loot.add(new DynamicBody(world, 12, 5f, 0.4f));
-		loot.add(new DynamicBody(world, 12, 4f, 0.4f));
+		loot.add(new DynamicBody(world, 2, 4.5f, 1f, 0.1f, "cue"));
+		loot.add(new DynamicBody(world, 4, 4.5f, 0.4f, "ball0"));
+		loot.add(new DynamicBody(world, 11, 4.5f, 0.4f, "ball1"));
+		loot.add(new DynamicBody(world, 12, 5f, 0.4f, "ball2"));
+		loot.add(new DynamicBody(world, 12, 4f, 0.4f, "ball3"));
 
 		/*WeldJointDef jointDef = new WeldJointDef ();
 		jointDef.initialize(loot.get(2).getBody(), loot.get(3).getBody(), new Vector2(12, 4.5f));
@@ -131,6 +131,9 @@ public class DistBox2D extends ApplicationAdapter {
 
 		// события
 		//platform.move();
+		if(loot.get(0).getBody().getFixtureList().get(0).isSensor()) {
+			loot.get(0).getBody().setTransform(1, 4.5f, 0);
+		}
 
 		// отрисовка
 		ScreenUtils.clear(0.2f, 0, 0.3f, 1);

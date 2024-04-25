@@ -33,19 +33,25 @@ public class MyContactListener implements ContactListener {
             // Обработка момента столкновения DynamicBody с StaticBody
             main.sndKnock2.play();
         }
-
-        /*if(fixtureA.getBody().getUserData() instanceof DynamicBody && fixtureB.getBody().getUserData() instanceof DynamicBody) {
-            // Обработка столкновения двух DynamicBody
-            DynamicBody bodyA = (DynamicBody)fixtureA.getBody().getUserData();
-            DynamicBody bodyB = (DynamicBody)fixtureB.getBody().getUserData();
-
-            // Далее можно добавить логику для определения момента столкновения
-        }*/
     }
 
     @Override
     public void endContact(Contact contact) {
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
 
+        Body bodyA = fixtureA.getBody();
+        Body bodyB = fixtureB.getBody();
+
+        if (bodyA.getType() == BodyDef.BodyType.DynamicBody && bodyB.getType() == BodyDef.BodyType.DynamicBody) {
+            // Обработка момента столкновения DynamicBody с DynamicBody
+            if(bodyA.getUserData().equals("cue")) {
+                fixtureA.setSensor(true);
+            }
+            if(bodyB.getUserData().equals("cue")) {
+                fixtureB.setSensor(true);
+            }
+        }
     }
 
     @Override

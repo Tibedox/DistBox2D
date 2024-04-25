@@ -20,7 +20,7 @@ public class DynamicBody {
     private float width, height;
     private Body body;
 
-    public DynamicBody(World world, float x, float y, float r) {
+    public DynamicBody(World world, float x, float y, float r, String name) {
         type = TYPE_CIRCLE;
 
         this.x = x;
@@ -35,6 +35,7 @@ public class DynamicBody {
         bodyDef.position.set(x, y);
 
         body = world.createBody(bodyDef);
+        body.setUserData(name);
 
         CircleShape shape = new CircleShape();
         shape.setRadius(r);
@@ -50,7 +51,7 @@ public class DynamicBody {
         shape.dispose();
     }
 
-    public DynamicBody(World world, float x, float y, float width, float height) {
+    public DynamicBody(World world, float x, float y, float width, float height, String name) {
         type = TYPE_BOX;
 
         this.x = x;
@@ -63,6 +64,7 @@ public class DynamicBody {
         bodyDef.position.set(x, y);
 
         body = world.createBody(bodyDef);
+        body.setUserData(name);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width/2, height/2);
