@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -40,6 +41,7 @@ public class DistBox2D extends ApplicationAdapter {
 	TextureRegion imgCircle;
 	TextureRegion imgTriangle;
 	TextureRegion imgLoot;
+	Sound sndKnock, sndKnock2;
 
 	// собственные объекты и переменные
 	StaticBody floor, roof;
@@ -56,11 +58,13 @@ public class DistBox2D extends ApplicationAdapter {
 		camera.setToOrtho(false, WORLD_WIDTH, WORLD_HEIGHT);
 		touch = new Vector3();
 		world = new World(new Vector2(0, -0f), true);
-		world.setContactListener(new MyContactListener());
+		world.setContactListener(new MyContactListener(this));
 		debugRenderer = new Box2DDebugRenderer();
 		debugRenderer.setDrawVelocities(true);
 		debugRenderer.setDrawJoints(true);
 
+		sndKnock = Gdx.audio.newSound(Gdx.files.internal("knock.mp3"));
+		sndKnock2 = Gdx.audio.newSound(Gdx.files.internal("knock2.mp3"));
 		imgLootAtlas = new Texture("atlasloot.png");
 		imgBoxLightGray = new TextureRegion(imgLootAtlas, 0, 0, 256, 256);
 		imgBoxMediumGray = new TextureRegion(imgLootAtlas, 256, 0, 256, 256);
@@ -158,6 +162,8 @@ public class DistBox2D extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		imgLootAtlas.dispose();
+		sndKnock.dispose();
+		sndKnock2.dispose();
 		world.dispose();
 		debugRenderer.dispose();
 	}

@@ -9,6 +9,12 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 public class MyContactListener implements ContactListener {
+    DistBox2D main;
+
+    public MyContactListener(DistBox2D main) {
+        this.main = main;
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Fixture fixtureA = contact.getFixtureA();
@@ -19,7 +25,7 @@ public class MyContactListener implements ContactListener {
 
         if ((bodyA.getType() == BodyDef.BodyType.DynamicBody && bodyB.getType() == BodyDef.BodyType.DynamicBody)) {
             // Обработка момента столкновения DynamicBody с StaticBody
-            System.out.println("столкнулись");
+            main.sndKnock.play();
         }
 
         /*if(fixtureA.getBody().getUserData() instanceof DynamicBody && fixtureB.getBody().getUserData() instanceof DynamicBody) {
