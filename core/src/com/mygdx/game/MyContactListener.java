@@ -23,9 +23,15 @@ public class MyContactListener implements ContactListener {
         Body bodyA = fixtureA.getBody();
         Body bodyB = fixtureB.getBody();
 
-        if ((bodyA.getType() == BodyDef.BodyType.DynamicBody && bodyB.getType() == BodyDef.BodyType.DynamicBody)) {
-            // Обработка момента столкновения DynamicBody с StaticBody
+        if (bodyA.getType() == BodyDef.BodyType.DynamicBody && bodyB.getType() == BodyDef.BodyType.DynamicBody) {
+            // Обработка момента столкновения DynamicBody с DynamicBody
             main.sndKnock.play();
+        }
+
+        if (bodyA.getType() == BodyDef.BodyType.DynamicBody && bodyB.getType() == BodyDef.BodyType.StaticBody
+            || bodyA.getType() == BodyDef.BodyType.StaticBody && bodyB.getType() == BodyDef.BodyType.DynamicBody) {
+            // Обработка момента столкновения DynamicBody с StaticBody
+            main.sndKnock2.play();
         }
 
         /*if(fixtureA.getBody().getUserData() instanceof DynamicBody && fixtureB.getBody().getUserData() instanceof DynamicBody) {
